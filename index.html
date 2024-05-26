@@ -60,12 +60,12 @@
             <span class="author-block">
               <a href="">Hanchao Liu</a><sup>1,2*</sup>,</span>
             <span class="author-block">
-              <a href="">Xiaohang Zhan</a><sup>2</sup>,</span>
+              <a href="">Xiaohang Zhan</a><sup>2&dagger;</sup>,</span>
             <span class="author-block">
               <a href="">Shaoli Huang</a><sup>2</sup>,
             </span>
             <span class="author-block">
-              <a href="">Tai-Jiang Mu</a><sup>1</sup>,
+              <a href="">Tai-Jiang Mu</a><sup>1&dagger;</sup>,
             </span>
             <span class="author-block">
               <a href="">Ying Shan</a><sup>2</sup>
@@ -78,10 +78,12 @@
             <span class="author-block"><sup>2</sup>Tencent AI Lab</span>
           </div>
           
-            <div class="is-size-5 publication-authors">
+          <div class="is-size-5 publication-authors">
               <span class="author-block"> <sup>*</sup> Work done during an internship</span>
-
           </div>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"> <sup>&dagger;</sup>Joint corresponding authors</span>
+        </div>
 
           
 
@@ -266,15 +268,38 @@
         <div class="columns is-centered">
           <div class="column content">
             <p>
-              Directional Constraint
+              Directional constraint
             </p>
             <p>
-              Task: arms pointing at given directions.
+              Task: <br>
+              walking + upper left arm pointing at direction d=(1,0,1)
             </p>
             <video id="matting-video" autoplay controls muted loop playsinline height="100%">
-              <source src="./static/videos/directional/gen0_smpl_params.mp4"
+              <source src="./static/videos/directional/dir_reg_gen4_smpl_params.mp4"
                       type="video/mp4">
             </video>
+
+            <p>
+          
+            </p>
+
+            <p>
+              Decomposed Constraints:<br>
+              <h class="title is-7">
+                1. The bone between left_shoulder and left_elbow points at d. <br>
+              </h>
+            </p>
+            
+            <p>
+              Motion Programming:<br>
+              <p class="title is-7">
+                total_err = 0; d = (1.0,0.0,1.0) <br>
+                for frame in motions: <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;    dir_err = |getDir(frame[‘l_elbow’]) – d| <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;    total_err += dir_err <br>
+              </p>
+            </p>
+
           </div>
         </div>
       </div>
@@ -290,12 +315,46 @@
           OR operation
         </p>
         <p>
-          Task: walking on a slope. 
+          Task: <br> walking on an inclined plane (slope=0.2)
         </p>
+        
         <video id="dollyzoom" autoplay controls muted loop playsinline height="100%">
-          <source src="./static/videos/or/gen0_smpl_params.mp4"
+          <source src="./static/videos/or/or_gen0_smpl_params.mp4"
                   type="video/mp4">
         </video>
+
+        <p>
+          
+        </p>
+
+        <p>
+          Decomposed Constraints:<br>
+          <h class="title is-7">
+            1. Either left foot or right foot is on the inclined plane. <br>
+            2. Both left foot and right foot should not be under the plane. 
+          </h>
+        </p>
+        
+        <p>
+          Motion Programming:<br>
+          <p class="title is-7">
+            # P is an inclined plane <br>
+            total_err = 0            <br>
+            for frame in motions:    <br>
+            &nbsp;&nbsp;&nbsp;&nbsp; total_err += min(distToPlane(frame[‘r_foot’], P),  <br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              distToPlane(frame[‘l_foot’], P))  <br>
+              &nbsp;&nbsp;&nbsp;&nbsp; total_err += underPlaneError(frame[‘r_foot’], P)&nbsp;+  <br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     
+              &nbsp;&nbsp;     
+              underPlaneError(frame[‘l_foot’], P)
+          </p>
+        </p>
+        
+        
       </div>
     </div>
     <!--/ Visual Effects. -->
